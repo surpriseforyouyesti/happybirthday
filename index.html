@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday Surprise</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: radial-gradient(circle at center, #d800a6 0%, #7a005c 60%, #300024 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    /* Tombol Musik Mengambang */
+    .music-control-btn {
+      position: fixed;
+      top: 25px;
+      left: 25px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .music-control-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    /* ANIMASI UTAMA HALAMAN & ELEMEN */
+    .page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    .active {
+      display: flex;
+      animation: pageEntrance 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes pageEntrance {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* Floating Effect untuk Komponen */
+    .float-anim {
+      animation: floatSmooth 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatSmooth {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(0.8deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    /* Tombol BACK Hijau */
+    .back-btn {
+      position: absolute;
+      top: 25px;
+      right: 40px;
+      background-color: #55c877;
+      color: #000;
+      font-weight: 800;
+      padding: 10px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border: 2px solid #3ca85c;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      transform: scale(1.08);
+      background-color: #66db88;
+    }
+
+    .script-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 6.5rem;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      margin-bottom: 20px;
+      animation: floatSmooth 3.5s ease-in-out infinite alternate;
+    }
+
+    .sub-text {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.2rem;
+      color: #ffffff;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .sub-text:hover {
+      transform: scale(1.1);
+    }
+
+    /* === HALAMAN 1: AMPLOP === */
+    .envelope-box {
+      width: 290px;
+      height: 190px;
+      background: #fffdfa;
+      border-radius: 8px;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.4s ease;
+      border: 1px solid #e0e0e0;
+    }
+
+    .envelope-box:hover {
+      transform: scale(1.08) rotate(-2deg);
+    }
+
+    .envelope-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 145px solid transparent;
+      border-right: 145px solid transparent;
+      border-top: 100px solid #eae6df;
+    }
+
+    .wax-seal {
+      width: 58px;
+      height: 58px;
+      background: radial-gradient(circle, #ff00ab, #8c005e);
+      border-radius: 50%;
+      z-index: 5;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(255, 255, 255, 0.4);
+      border: 2px solid #ff6fd8;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 5px #ff00ab; }
+      100% { box-shadow: 0 0 20px #ff6fd8, 0 0 10px #ffffff; }
+    }
+
+    /* === HALAMAN 2: ANIMASI AMPLOP DENGAN KERTAS KELUAR === */
+    .bday-card-v2 {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      height: 420px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 350px;
+      height: 230px;
+      background: #e8e3da;
+      border-radius: 6px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      z-index: 5;
+      perspective: 1000px;
+    }
+
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 175px solid #f4efe6;
+      border-right: 175px solid #f4efe6;
+      border-top: 115px solid transparent;
+      border-bottom: 115px solid #eae5dc;
+      border-radius: 0 0 6px 6px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 175px solid transparent;
+      border-right: 175px solid transparent;
+      border-top: 125px solid #ded9ce;
+      transform-origin: top center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.4s;
+      z-index: 5;
+    }
+
+    .envelope-seal-v2 {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, #ff00ab, #8c005e);
+      border-radius: 50%;
+      position: absolute;
+      top: 95px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      border: 2px solid #ff6fd8;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .letter-paper {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 310px;
+      height: 210px;
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 20px 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.8s ease, z-index 0.1s 0.4s;
+      border: 1px solid #eee;
+    }
+
+    .letter-paper h1 {
+      font-family: 'Great Vibes', cursive;
+      color: #6a0048;
+      font-size: 3.6rem;
+      line-height: 0.95;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      opacity: 0.9;
+      transition: opacity 0.5s ease 0.3s;
+    }
+
+    .letter-paper .date {
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: #555;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 2;
+    }
+
+    .envelope-wrapper.open .envelope-seal-v2 {
+      opacity: 0;
+      transform: translateX(-50%) scale(0.5);
+      pointer-events: none;
+    }
+
+    .envelope-wrapper.open .letter-paper {
+      transform: translateX(-50%) translateY(-110px);
+      height: 230px;
+      z-index: 6;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    /* === POSISI FOTO & STRIP HALAMAN 2 === */
+    .heart-photo {
+      position: absolute;
+      left: 0px;
+      top: 70px;
+      width: 250px;
+      height: 250px;
+      z-index: 3;
+      transform: rotate(-15deg);
+      filter: drop-shadow(0 0 15px #ff00ff) drop-shadow(0 0 30px #d800a6);
+    }
+
+    .heart-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+      -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      mask-position: center;
+    }
+
+    .polaroid-bottom-left {
+      position: absolute;
+      left: 70px;
+      bottom: 5px;
+      background: white;
+      padding: 8px 8px 25px 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      transform: rotate(-25deg);
+      z-index: 5;
+    }
+
+    .polaroid-bottom-left img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-strip-right {
+      position: absolute;
+      right: 100px;
+      top: 70px;
+      background: white;
+      padding: 8px 8px 12px 8px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+      transform: rotate(20deg);
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .photo-strip-right img {
+      width: 110px;
+      height: 120px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* STIKER DEKORASI */
+    .decor-rose-topright {
+      position: absolute;
+      top: -75px;
+      right: 30px;
+      width: 120px;
+      z-index: 10;
+      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4));
+      transform: rotate(15deg);
+    }
+
+    .decor-lily-right {
+      position: absolute;
+      top: 160px;
+      right: 20px;
+      width: 80px;
+      z-index: 10;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+      transform: rotate(-10deg);
+    }
+
+    .decor-flower-bottomright {
+      position: absolute;
+      bottom: 40px;
+      right: 30px;
+      width: 100px;
+      z-index: 10;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+    }
+
+    .decor-flower-left {
+      position: absolute;
+      top: 140px;
+      left: 10px;
+      width: 90px;
+      z-index: 8;
+      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+      transform: rotate(-15deg);
+    }
+
+    .decor-butterfly-left {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 160px;
+      z-index: 12;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      transform: rotate(-5deg);
+      animation: butterflyFlap 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes butterflyFlap {
+      0% { transform: translateY(0) rotate(-5deg) scale(1); }
+      100% { transform: translateY(-8px) rotate(2deg) scale(1.05); }
+    }
+
+    .tap-surprise-btn {
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 30px;
+      font-weight: 700;
+      transition: all 0.3s;
+      animation: pulseGlowText 2s infinite alternate;
+    }
+
+    @keyframes pulseGlowText {
+      from { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+      to { text-shadow: 0 0 15px rgba(255, 182, 193, 1), 0 0 25px rgba(255, 255, 255, 0.8); }
+    }
+
+    .tap-surprise-btn:hover {
+      color: #ff9ee2;
+      transform: scale(1.05);
+    }
+
+    /* === HALAMAN 3: CHOOSE THE SURPRISE === */
+    .surprise-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .surprise-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.4s ease;
+    }
+
+    .surprise-item:hover {
+      transform: translateY(-12px) scale(1.08);
+    }
+
+    .icon-glow {
+      width: 130px;
+      height: 130px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 15px;
+      animation: floatSmooth 4s ease-in-out infinite alternate;
+    }
+
+    .icon-glow img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(255, 230, 150, 0.5));
+    }
+
+    .item-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      color: #fff;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+      padding-bottom: 2px;
+      line-height: 1;
+    }
+
+    /* === HALAMAN 4: JOURNEY === */
+    .journey-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 950px;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .polaroid-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .polaroid-card {
+      background: #ffffff;
+      padding: 10px 10px 35px 10px;
+      border-radius: 4px;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .polaroid-card img.main-img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+      border-radius: 2px;
+    }
+
+    .polaroid-card:hover {
+      transform: scale(1.1) rotate(0deg) !important;
+      z-index: 20;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .polaroid-card:nth-child(1) { transform: rotate(-8deg); }
+    .polaroid-card:nth-child(2) { transform: rotate(5deg); }
+    .polaroid-card:nth-child(3) { transform: rotate(-4deg); }
+    .polaroid-card:nth-child(4) { transform: rotate(8deg); }
+    .polaroid-card:nth-child(5) { transform: rotate(6deg); }
+    .polaroid-card:nth-child(6) { transform: rotate(-6deg); }
+    .polaroid-card:nth-child(7) { transform: rotate(3deg); }
+    .polaroid-card:nth-child(8) { transform: rotate(-7deg); }
+
+    .sticker {
+      position: absolute;
+      z-index: 10;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+
+    .sticker-p1-topleft { width: 80px; top: -35px; left: -40px; }
+    .sticker-p2-left { width: 90px; bottom: -25px; left: -45px; }
+    .sticker-p3-right { width: 60px; top: 30px; right: -30px; }
+    .sticker-p4-right { width: 85px; bottom: -15px; right: -35px; }
+    .sticker-p5-left { width: 90px; bottom: -25px; left: -45px; }
+    .sticker-p6-bottom { width: 85px; bottom: -45px; left: 50%; transform: translateX(-50%); }
+    .sticker-p8-right { width: 85px; bottom: -20px; right: -40px; }
+
+    /* === HALAMAN 5: MOMENT === */
+    .moment-container {
+      position: relative;
+      width: 100%;
+      max-width: 1050px;
+      height: 520px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .moment-title {
+      position: absolute;
+      top: 0;
+      left: 20%;
+      font-family: 'Great Vibes', cursive;
+      font-size: 5.8rem;
+      color: #ffffff;
+      text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+      transform: rotate(-2deg);
+    }
+
+    .moment-letter-wrapper {
+      position: absolute;
+      top: 120px;
+      left: 200px;
+      z-index: 5;
+    }
+
+    .moment-letter-card {
+      background: #fdfbf7;
+      width: 450px;
+      padding: 25px 22px 30px 50px;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      transform: rotate(-3deg);
+      color: #222;
+      text-align: left;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      position: relative;
+    }
+
+    .rose-decor-left {
+      position: absolute;
+      top: -30px;
+      left: -200px;
+      width: 300px;
+      z-index: 10;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+      pointer-events: none;
+    }
+
+    .vinyl-player-widget {
+      position: absolute;
+      bottom: -135px;
+      right: 50px;
+      z-index: 12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .vinyl-disc-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .vinyl-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .camera-decor {
+      position: absolute;
+      bottom: -120px;
+      left: -10px;
+      width: 200px;
+      z-index: 12;
+      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.4));
+      transform: rotate(5deg);
+    }
+
+    .moment-frame-wrapper {
+      position: absolute;
+      right: 200px;
+      top: 100px;
+      width: 220px;
+      height: 260px;
+      z-index: 6;
+      transform: rotate(4deg);
+    }
+
+    .gold-frame-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .photo-inside-frame-m {
+      position: absolute;
+      top: 15%;
+      left: 12%;
+      width: 70%;
+      height: 70%;
+      object-fit: cover;
+      border-radius: 2px;
+      z-index: 1;
+      transform: rotate(15deg);
+    }
+
+    .frame-overlay-img-m {
+      position: absolute;
+      top: 0;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.4));
+      transform: rotate(15deg);
+    }
+
+    .rose-decor-right {
+      position: absolute;
+      top: -20px;
+      right: -80px;
+      width: 200px;
+      z-index: 10;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+      transform: rotate(15deg);
+      pointer-events: none;
+    }
+
+    /* === HALAMAN 6: PLAYLIST / MEMORIES === */
+    .playlist-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      height: 520px;
+      margin: 60px auto 0;
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      align-items: center;
+      padding: 0 40px;
+    }
+
+    .playlist-left-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 35px;
+      position: relative;
+      width: 520px;
+    }
+
+    .video-frame-container {
+      width: 290px;
+      height: 520px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      background: #000;
+      position: relative;
+    }
+
+    .video-frame-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .playlist-right-section {
+      position: relative;
+      width: 380px;
+      height: 420px;
+    }
+
+    .gold-frame-container .photo-inside-frame {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 5%;
+      left: 10%;
+      padding: 100px;
+      box-sizing: border-box;
+    }
+
+    .gold-frame-container .frame-overlay-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .p-frame-1 { position: absolute; top: -50px; left: 20px; width: 165px; height: 195px; z-index: 2; }
+    .p-frame-2 { position: absolute; top: 40px; right: 0px; width: 165px; height: 195px; z-index: 1; }
+    .p-frame-3 { position: absolute; bottom: 70px; left: 40px; width: 165px; height: 195px; z-index: 3; }
+
+    .neon-notes-img {
+      position: absolute;
+      bottom: -50px;
+      right: -70px;
+      width: 360px;
+      z-index: 10;
+      filter: drop-shadow(0 0 15px #00f0ff) drop-shadow(0 0 25px #0088ff);
+      animation: neonGlowPulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes neonGlowPulse {
+      0% { filter: drop-shadow(0 0 10px #00d8ff) drop-shadow(0 0 15px #0066ff); transform: scale(1) rotate(0deg); }
+      100% { filter: drop-shadow(0 0 20px #00ffff) drop-shadow(0 0 35px #00aaff); transform: scale(1.04) rotate(2deg); }
+    }
+
+    /* Modal untuk Gift (Disembunyikan secara default) */
+    .modal {
+      display: none !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background: white;
+      color: #333;
+      padding: 35px;
+      border-radius: 15px;
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      animation: pageEntrance 0.4s ease forwards;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 26px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    /* === HALAMAN 7: GIFT === */
+    .gift-container {
+      position: relative;
+      width: 320px;
+      height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .gift-box {
+      position: relative;
+      width: 240px;
+      height: 200px;
+      transition: transform 0.3s ease;
+    }
+
+    .gift-box:not(.open):hover { animation: shakeBox 0.6s ease-in-out infinite alternate; }
+
+    @keyframes shakeBox {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-3deg) scale(1.02); }
+      50% { transform: rotate(0deg) scale(1.02); }
+      75% { transform: rotate(3deg) scale(1.02); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    .gift-body {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(135deg, #e60073, #99004d);
+      border-radius: 8px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .gift-lid {
+      position: absolute;
+      top: 20px;
+      left: -10px;
+      width: 260px;
+      height: 50px;
+      background: linear-gradient(135deg, #ff1a8c, #cc0066);
+      border-radius: 6px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      z-index: 7;
+      display: flex;
+      justify-content: center;
+      transition: transform 0.8s cubic-bezier(0.25, 1.5, 0.5, 1), opacity 0.5s ease;
+    }
+
+    .ribbon-vertical { position: absolute; left: 50%; transform: translateX(-50%); width: 35px; height: 100%; background: #ffd700; box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); }
+    .ribbon-horizontal { position: absolute; top: 55px; left: 0; width: 100%; height: 35px; background: #ffd700; box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); }
+    .ribbon-vertical-lid { width: 35px; height: 100%; background: #ffea00; }
+    .bow { position: absolute; top: -35px; font-size: 45px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3)); }
+
+    .gift-card-inner {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 270px;
+      min-height: 130px;
+      background: #fffdfa;
+      border: 2px dashed #ff007f;
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    }
+
+    .gift-card-inner h2 {
+      font-family: 'Great Vibes', cursive;
+      color: #99004d;
+      font-size: 2.1rem;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .gift-card-inner p {
+      color: #333;
+      font-weight: 600;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .flower-bouquet {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      width: 220px;
+      height: 220px;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.27), opacity 0.5s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .flower-center { position: relative; z-index: 5; }
+    .main-flower-img { width: 120px; height: auto; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4)); animation: floatSmooth 3.5s ease-in-out infinite alternate; }
+    .side-flower { position: absolute; width: 85px; height: auto; z-index: 4; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.3)); transition: transform 0.8s ease 0.3s; }
+    .side-left { left: 10px; bottom: 25px; transform: rotate(-25deg); }
+    .side-right { right: 10px; bottom: 25px; transform: rotate(25deg); }
+
+    .petals-wrapper .petal { position: absolute; font-size: 1.4rem; opacity: 0; filter: drop-shadow(0 0 8px rgba(255, 182, 193, 0.8)); }
+    .p1 { top: -10px; left: 15px; animation-delay: 0.1s; }
+    .p2 { top: -15px; right: 20px; animation-delay: 0.3s; }
+    .p3 { bottom: 20px; left: -15px; animation-delay: 0.5s; }
+    .p4 { bottom: 15px; right: -15px; animation-delay: 0.2s; }
+
+    @keyframes petalBloom {
+      0% { opacity: 0.3; transform: translateY(0) scale(0.8) rotate(0deg); }
+      100% { opacity: 1; transform: translateY(-20px) scale(1.1) rotate(20deg); }
+    }
+
+    .gift-box.open .gift-lid { transform: translateY(-130px) rotate(-15deg) scale(0.9); opacity: 0; }
+    .gift-box.open .flower-bouquet { transform: translateX(-50%) translateY(-150px) scale(1); opacity: 1; z-index: 6; }
+    .gift-box.open .petals-wrapper .petal { animation: petalBloom 2s ease-out infinite alternate; }
+    .gift-box.open .gift-card-inner { transform: translateX(-50%) translateY(-15px); opacity: 1; z-index: 8; }
+
+    /* =======================================================
+       CSS RESPONSIVE MOBILE TERPERBAIKI SANGAT PRESISI
+       ======================================================= */
+    @media screen and (max-width: 768px) {
+
+      .page {
+        padding: 20px 10px;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* KONTROL MUSIK & NAVIGATION */
+      .music-control-btn {
+        top: 15px;
+        left: 15px;
+        padding: 6px 14px;
+        font-size: 0.75rem;
+      }
+
+      .back-btn {
+        top: 15px;
+        right: 15px;
+        padding: 6px 16px;
+        font-size: 0.85rem;
+      }
+
+      .script-title {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+      }
+
+      .sub-text {
+        font-size: 1.8rem;
+        margin-top: 15px;
+      }
+
+      /* === HALAMAN 2: AMPLOP SURPRISE === */
+      .bday-card-v2 {
+        transform: scale(0.68);
+        transform-origin: center center;
+        margin-top: 0;
+        height: 380px;
+      }
+
+      .tap-surprise-btn {
+        margin-top: 10px;
+        font-size: 1.1rem;
+      }
+
+      /* === HALAMAN 3: CHOOSE SURPRISE === */
+      .surprise-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 15px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .surprise-item {
+        margin: 0 auto;
+      }
+
+      .icon-glow {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 5px;
+      }
+
+      .item-title {
+        font-size: 2rem;
+      }
+
+      /* === HALAMAN 4: JOURNEY === */
+      .journey-container {
+        padding: 0;
+        margin-top: 20px;
+        width: 100%;
+      }
+
+      .polaroid-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px 8px;
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+      }
+
+      .polaroid-card {
+        padding: 6px 6px 20px 6px;
+      }
+
+      .polaroid-card img.main-img {
+        width: 100%;
+        height: 100px;
+      }
+
+      .sticker {
+        transform: scale(0.5);
+      }
+
+      /* === HALAMAN 5: MOMENT === */
+      .moment-container {
+        flex-direction: column;
+        height: auto;
+        gap: 15px;
+        margin-top: 20px;
+        width: 100%;
+      }
+
+      .moment-title {
+        position: relative;
+        left: 0;
+        top: 0;
+        font-size: 3.5rem;
+        margin-bottom: 0;
+        transform: none;
+      }
+
+      .moment-letter-wrapper {
+        position: relative;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .moment-letter-card {
+        width: 90%;
+        max-width: 310px;
+        padding: 16px 14px 16px 22px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        transform: rotate(-1deg);
+      }
+
+      .rose-decor-left {
+        width: 200px;
+        left: -40px;
+        top: 0px;
+      }
+
+      .vinyl-player-widget {
+        display: none !important;
+      }
+
+      .moment-frame-wrapper {
+        position: relative;
+        right: 0;
+        top: 0;
+        width: 150px;
+        height: 180px;
+        margin-top: 10px;
+        transform: rotate(2deg);
+      }
+
+      .camera-decor {
+        width: 85px;
+        bottom: -30px;
+        left: -15px;
+      }
+
+      .rose-decor-right {
+        width: 90px;
+        right: -20px;
+        top: -15px;
+      }
+
+/* === HALAMAN 6: PLAYLIST / MEMORIES (MOBILE) === */
+      #page6 {
+        padding-top: 55px;
+        justify-content: flex-start;
+      }
+
+      .playlist-wrapper {
+        flex-direction: column;
+        height: auto;
+        gap: 10px; /* Dikurangi dari 25px menjadi 10px agar rapat */
+        margin-top: 10px;
+        padding: 0;
+        width: 100%;
+        align-items: center;
+      }
+
+      .playlist-left-section {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .video-frame-container {
+        width: 320px;
+        height: 560px;
+        margin: 0 auto;
+      }
+
+      .playlist-right-section {
+        position: relative;
+        width: 260px;
+        height: 180px; /* Dikurangi agar kontainer bingkai lebih pendek */
+        transform: scale(0.85);
+        margin: -10px auto 0 auto; /* Margin minus untuk menaikkan posisi note ke dekat video */
+      }
+
+      .p-frame-1 { top: -20px; left: 10px; }
+      .p-frame-2 { top: 20px; right: 0px; }
+      .p-frame-3 { bottom: 10px; left: 20px; }
+
+      .neon-notes-img {
+        width: 200px;
+        position: absolute;
+        right: -80px;
+        bottom: 100px; /* Dinaikkan agar menempel berdekatan dengan video */
+      }
+
+      /* === HALAMAN 7: GIFT === */
+      .gift-container {
+        transform: scale(0.75);
+        transform-origin: center center;
+        margin-top: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUDIO MUSIK LATAR BELAKANG LOKAL -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="Lagu.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- KONTROL MUSIK -->
+  <button class="music-control-btn" id="musicBtn" onclick="toggleMusic()">
+    🎵 <span id="musicText">Play Music</span>
+  </button>
+
+  <!-- PAGE 1: AMPLOP AWAL -->
+  <div id="page1" class="page active">
+    <p class="script-title">Press the Envelope</p>
+    <div class="envelope-box float-anim" onclick="startSurprise()">
+      <div class="wax-seal"></div>
+    </div>
+    <div class="sub-text" onclick="startSurprise()">tap to lanjut</div>
+  </div>
+
+  <!-- PAGE 2: ANIMASI AMPLOP TERBUKA & KERTAS KELUAR -->
+  <div id="page2" class="page">
+    <div class="bday-card-v2 float-anim">
+
+      <!-- Amplop Interaktif 3D -->
+      <div class="envelope-wrapper" id="envelopeSlide2" onclick="openSlide2Envelope()">
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal-v2"></div>
+
+        <!-- Kertas Surat yang Keluar -->
+        <div class="letter-paper">
+          <h1>Happy<br>Birthday</h1>
+          <div class="date">28.08.26</div>
+        </div>
+
+        <div class="envelope-pocket"></div>
+      </div>
+
+      <!-- Stiker Dekorasi Sesuai Referensi Gambar -->
+      <img src="11.png" class="decor-rose-topright" alt="Mawar Kanan Atas">
+      <img src="23.png" class="decor-lily-right" alt="Lily Kanan">
+      <img src="21.png" class="decor-flower-bottomright" alt="Bunga Kanan Bawah">
+
+      <img src="22.png" class="decor-flower-left" alt="Bunga Kiri">
+      <img src="19.png" class="decor-butterfly-left" alt="Kupu Kupu Pink">
+
+    </div>
+
+    <div class="tap-surprise-btn" onclick="goToPage(3)">TAP FOR SURPRISE</div>
+  </div>
+
+  <!-- PAGE 3: CHOOSE THE SURPRISE -->
+  <div id="page3" class="page">
+    <p class="script-title">Choose the Surprise</p>
+    <div class="surprise-grid">
+      <div class="surprise-item" onclick="goToPage(4)">
+        <div class="icon-glow">
+          <img src="1.png" alt="Journey">
+        </div>
+        <div class="item-title">Journey</div>
+      </div>
+      <div class="surprise-item" onclick="goToPage(5)">
+        <div class="icon-glow">
+          <img src="2.png" alt="Moment">
+        </div>
+        <div class="item-title">Moment</div>
+      </div>
+      <div class="surprise-item" onclick="goToPage(6)">
+        <div class="icon-glow">
+          <img src="folder.png" alt="Playlist">
+        </div>
+        <div class="item-title">Memories</div>
+      </div>
+      <div class="surprise-item" onclick="goToPage(7)">
+        <div class="icon-glow">
+          <img src="4.png" alt="Gift">
+        </div>
+        <div class="item-title">Gift</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: JOURNEY -->
+  <div id="page4" class="page">
+    <div class="back-btn" onclick="goToPage(3)">BACK ◀</div>
+
+    <div class="journey-container">
+      <div class="polaroid-grid">
+        <div class="polaroid-card">
+          <img src="7.png" class="sticker sticker-p1-topleft" alt="Heart Soft">
+          <img src="img/img-1.jpeg" class="main-img" alt="Foto 1">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="6.png" class="sticker sticker-p2-left" alt="Two Hearts">
+          <img src="img/img-10.jpeg" class="main-img" alt="Foto 2">
+        </div>
+
+        <div class="polaroid-card">
+          <svg class="sticker sticker-p3-right" viewBox="0 0 100 100">
+            <path
+              d="M50 88.5 C20 65, 5 45, 5 28 C5 12, 18 3, 33 3 C42 3, 47 8, 50 13 C53 8, 58 3, 67 3 C82 3, 95 12, 95 28 C95 45, 80 65, 50 88.5 Z"
+              fill="#c00d1e" stroke="#8a000e" stroke-width="2" />
+            <path d="M30 15 C20 20, 15 30, 15 40" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"
+              stroke-linecap="round" />
+          </svg>
+          <img src="img/img-3.jpeg" class="main-img" alt="Foto 3">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="10.png" class="sticker sticker-p4-right" alt="Whale">
+          <img src="img/img-4.jpeg" class="main-img" alt="Foto 4">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="8.png" class="sticker sticker-p5-left" alt="Saturn">
+          <img src="img/img-5.jpeg" class="main-img" alt="Foto 5">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="5.png" class="sticker sticker-p6-bottom" alt="Watercolor Hearts">
+          <img src="img/img-6.jpeg" class="main-img" alt="Foto 6">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="img/img-9.jpeg" class="main-img" alt="Foto 7">
+        </div>
+
+        <div class="polaroid-card">
+          <img src="9.png" class="sticker sticker-p8-right" alt="Purple Planet">
+          <img src="img/img-8.jpeg" class="main-img" alt="Foto 8">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: MOMENT -->
+  <div id="page5" class="page">
+    <div class="back-btn" onclick="goToPage(3)">BACK ◀</div>
+
+    <div class="moment-container">
+      <!-- Judul Script Font -->
+      <div class="moment-title float-anim">Yesti</div>
+
+      <!-- Kiri: Kartu Surat Ucapan -->
+      <div class="moment-letter-wrapper float-anim">
+        <!-- Stiker Mawar Kiri -->
+        <img src="12.png" class="rose-decor-left" alt="Mawar">
+
+        <div class="moment-letter-card">
+          "Selamat ulang tahun, Sayang. Di hari spesialmu ini, aku cuma mau bilang terima kasih karena sudah lahir ke
+          dunia dan membawa begitu banyak kebahagiaan ke hidupku. Kamu adalah hal terindah yang pernah hadir dalam
+          hidupku, dan aku berharap bisa terus merayakan hari-hari bahagiamu di tahun-tahun berikutnya. I love you so
+          much, kini dan nanti."
+        </div>
+
+        <!-- Pemutar Musik Vinyl (Disembunyikan di Mobile) -->
+        <div class="vinyl-player-widget" onclick="toggleMusic()">
+          <div class="vinyl-disc-container">
+            <img src="14.png" class="vinyl-img" alt="Vinyl Disc Player" onerror="this.src='3.png'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Kanan: Bingkai Foto Emas dengan Mawar & Kamera -->
+      <div class="moment-frame-wrapper float-anim">
+        <!-- Stiker Mawar Kanan Atas Frame -->
+        <img src="11.png" class="rose-decor-right" alt="Mawar">
+
+        <div class="gold-frame-container">
+          <img src="img/img-2.jpeg" class="photo-inside-frame-m" alt="Freya Photo">
+          <img src="13.png" class="frame-overlay-img-m" alt="Gold Frame" onerror="this.src='13.png'">
+        </div>
+
+        <!-- Stiker Kamera Vintage Kanan Bawah Frame -->
+        <img src="1.png" class="camera-decor" alt="Kamera">
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: PLAYLIST / MEMORIES -->
+  <div id="page6" class="page">
+    <div class="back-btn" onclick="goToPage(3)">BACK ◀</div>
+
+    <div class="playlist-wrapper">
+      <!-- Sisi Kiri: Video Local MP4 -->
+      <div class="playlist-left-section">
+        <div class="video-frame-container">
+          <video controls width="100%" height="auto">
+            <source src="Video.mp4" type="video/mp4">
+            Browser Anda tidak mendukung tag video.
+          </video>
+        </div>
+      </div>
+
+      <!-- Sisi Kanan: 3 Bingkai Foto Susun & Nada Neon -->
+      <div class="playlist-right-section float-anim">
+        <img src="18.png" class="neon-notes-img" alt="Neon Musical Notes">
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 7: SPECIAL GIFT -->
+  <div id="page7" class="page">
+    <div class="back-btn" onclick="goToPage(3)">BACK ◀</div>
+
+    <p class="script-title float-anim">Your Special Gift</p>
+
+    <div class="gift-container" onclick="openGift()">
+      <div class="gift-box" id="giftBox">
+
+        <!-- Susunan Buket Bunga -->
+        <div class="flower-bouquet">
+          <div class="flower-center">
+            <img src="11.png" class="main-flower-img" alt="Mawar Utama" onerror="this.src='23.png'">
+          </div>
+          <img src="23.png" class="side-flower side-left" alt="Bunga Kiri">
+          <img src="21.png" class="side-flower side-right" alt="Bunga Kanan">
+
+          <div class="petals-wrapper">
+            <span class="petal p1">🌸</span>
+            <span class="petal p2">🌹</span>
+            <span class="petal p3">🌺</span>
+            <span class="petal p4">✨</span>
+          </div>
+        </div>
+
+        <!-- Kartu Ucapan Spesial -->
+        <div class="gift-card-inner">
+          <h2>Special Flower For You</h2>
+          <p>Bunga indah ini mekar khusus untuk mempercantik hari bahagiamu! 🌸✨</p>
+        </div>
+
+        <!-- Badan Kotak Kado -->
+        <div class="gift-body">
+          <div class="ribbon-vertical"></div>
+          <div class="ribbon-horizontal"></div>
+        </div>
+
+        <!-- Tutup Kotak Kado -->
+        <div class="gift-lid">
+          <div class="ribbon-vertical-lid"></div>
+          <div class="bow">🎀</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="tap-surprise-btn" onclick="openGift()">TAP TO UNBOX</div>
+  </div>
+
+  <script>
+    const music = document.getElementById('bgMusic');
+    const musicText = document.getElementById('musicText');
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicText.innerText = "Pause Music";
+      } else {
+        music.pause();
+        musicText.innerText = "Pause Music";
+      }
+    }
+
+    function startSurprise() {
+      music.play().then(() => {
+        musicText.innerText = "Pause Music";
+      }).catch(err => {
+        console.log("Autoplay diblokir:", err);
+      });
+      goToPage(2);
+    }
+
+    function openSlide2Envelope() {
+      const envelope = document.getElementById('envelopeSlide2');
+      envelope.classList.add('open');
+    }
+
+    function goToPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+
+      const targetPage = document.getElementById('page' + pageNumber);
+      targetPage.classList.add('active');
+
+      if (pageNumber === 2) {
+        const envelope = document.getElementById('envelopeSlide2');
+        envelope.classList.remove('open');
+        setTimeout(() => {
+          envelope.classList.add('open');
+        }, 400);
+      }
+
+      if (pageNumber === 2 || pageNumber === 3) {
+        confetti({
+          particleCount: 80,
+          spread: 90,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    function openGift() {
+      const gift = document.getElementById('giftBox');
+
+      if (!gift.classList.contains('open')) {
+        gift.classList.add('open');
+
+        confetti({
+          particleCount: 150,
+          spread: 120,
+          origin: { y: 0.5 },
+          colors: ['#ff007f', '#ffd700', '#ffffff', '#ff9ee2'],
+          startVelocity: 45
+        });
+
+        setTimeout(() => {
+          confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+          confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+        }, 300);
+      }
+    }
+  </script>
+</body>
+
+</html>
